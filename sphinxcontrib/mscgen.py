@@ -153,7 +153,7 @@ def render_msc(self, code, format, prefix='mscgen'):
     if not run_cmd(self.builder, mscgen_args, 'mscgen', 'mscgen', code):
         return None, None, None
 
-    if format == 'png':
+    if format in ['png', 'svg']:
         mscgen_args = mscgen_args[:-4] + ['-T', 'ismap', '-o', mapfn]
         if not run_cmd(self.builder, mscgen_args, 'mscgen', 'mscgen', code):
             return None, None, None
@@ -165,8 +165,10 @@ def render_msc(self, code, format, prefix='mscgen'):
 
 
 def render_msc_html(self, node, code, prefix='mscgen', imgcls=None):
+    format = self.builder.config.mscgen_html_format
+    assert format in ['png', 'svg'], 'Unsupported format: ' + format
     try:
-        fname, outfn, id = render_msc(self, code, 'png', prefix)
+        fname, outfn, id = render_msc(self, code, format, prefix)
     except MscgenError, exc:
         self.builder.warn('mscgen code %r: ' % code + str(exc))
         raise nodes.SkipNode
@@ -217,6 +219,7 @@ def setup(app):
     app.add_directive('msc', MscgenSimple)
     app.add_config_value('mscgen', 'mscgen', 'html')
     app.add_config_value('mscgen_args', [], 'html')
+    app.add_config_value('mscgen_html_format', 'png', 'html')
     app.add_config_value('mscgen_epstopdf', 'epstopdf', 'html')
     app.add_config_value('mscgen_epstopdf_args', [], 'html')
 
