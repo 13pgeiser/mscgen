@@ -4,6 +4,7 @@ python:
 install:
   - pip install markdown2
   - pip wheel . -w dist
+  - python setup.py sdist
 script:
   - cd dist
   - find . -type f -printf '[%P](%p)  \n' >index.md
